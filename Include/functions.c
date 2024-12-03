@@ -2,7 +2,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h> 
+#include <time.h>
+
+typedef struct // Definición del struct de jugador
+{
+    int number;
+    char name[30];
+    int hand[7];
+    int value;
+    
+}
+player;
 
 int deal_reset(int check)
 {
@@ -37,7 +47,7 @@ int deal_reset(int check)
         return -1;
     }
     
-    while (check == 0) 
+    while (check == 0) // Revisión de carta repetida
     {
         card = (rand() % 52 ) + 1; // Generar una carta
 
@@ -47,7 +57,7 @@ int deal_reset(int check)
         {
             if (dealt[i] == card)
             {
-                check == 0; // Se encontró la carta (otro loop)
+                check = 0; // Se encontró la carta (otro loop)
             }
         }
     }
@@ -61,5 +71,5 @@ int deal_reset(int check)
         }
     }
     
-    return -1; // Error: No se añadió la carta
+    return -2; // Error: No se añadió la carta
 }

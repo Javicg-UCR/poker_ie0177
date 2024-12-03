@@ -18,7 +18,7 @@ GtkWidget *window;
 GtkWidget *fixed1;
 GtkWidget *button1;
 GtkWidget *label1;
-GtkWidget *builder;
+GtkBuilder *builder;
 
 int main (int argc, char *argv[])
 {
