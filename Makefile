@@ -1,20 +1,33 @@
 ## Makefile para el proyecto
+## Instrucciones: cambiar el nombre de lo que se quiere correr en CFILE, EXE y TARGET
+## Correr desde la raíz, el ejecutable va a la raíz
+## Correr "make clean" después para limpiar la raíz
 
 CC = gcc
+FLAGS = -Wall -rdynamic
 
-# Tags de compilación de GTK
-CFLAGS = `pkg-config --cflags gtk+-3.0`
-LIBS = `pkg-config --libs gtk +-3.0`
+#-----------------------------------------
 
-SRC = ./src/ # Carpeta "source" (src)
-INCLUDE = ./include/ # Carpeta "include" (include)
-TEST = test # Ejecutable de prueba
-MAIN = main # Ejecutable principal
-FUNC1 = func1 # Ejecutable función 1
+## Cambiar estos nombres
 
-test:
-	$(CC) $(CFLAGS) $(TEST).c -o $(TEST) $(LIBS) -I $(INCLUDE) -c $(SRC)
-func1
-	$(CC) $(CFLAGS) $(FUNC1).c -o $(FUNC1) $(LIBS) -I $(INCLUDE) -c $(SRC)
+#              archivo.c     (nombre del archivo principal)
+CFILE = ./test/firsttest.c
+
+#       archivo   (nombre del exe)
+EXE = ./firsttest
+
+#        archivo      (nombre del target)
+TARGET = firsttest
+
+# -----------------------------------------
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(CFILE)
+	$(CC) -Wall -rdynamic `pkg-config --cflags gtk+-3.0` -o $(TARGET) $(CFILE) `pkg-config --libs gtk+-3.0`
 clean:
-	rm -f *.o $(EXE) $(func1)
+	rm -f $(EXE)
+
+##gcc `pkg-config --cflags gtk+-3.0` -o imagetest imagetest.c `pkg-config --libs gtk+-3.0`
