@@ -9,15 +9,23 @@ typedef struct // Definición del struct de jugador
     int number;
     char name[30];
     int hand[7];
-    int value;
-    
+    int handValue;
+    int money;
+    int fold;
 }
 player;
 
 int deal_reset(int check)
 {
-    // Check == 1 -> Reset
-    // Check != 1 -> Deal
+    // Input (1 int)
+    // 1: Reset
+    // 0 (no 1): Deal
+
+    // Output (1 int)
+    // 0: Se resetteó el deck correctamente
+    // -1: Todas las cartas se han dado
+    // -2: No se asignó la carta al array
+    // 1-52: Valor de carta solicitado
 
     // Declaración del array para las cartas utilizadas
     // Asegura que no se repitan
@@ -73,3 +81,4 @@ int deal_reset(int check)
     
     return -2; // Error: No se añadió la carta
 }
+
