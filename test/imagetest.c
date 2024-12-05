@@ -13,12 +13,14 @@
 
 #define GLADE_FILE "./test/ImageTesting.glade"
 
-// Se declaran pointers globales
+// Declaración de la ventana principal
+
+// Declaración del toplevel
 
 GtkWidget *window;
 GtkWidget *fixed1;
 
-// Card image declarations
+// Declaración de imágenes de cartas
 GtkImage *cardTable1;
 GtkImage *cardTable2;
 GtkImage *cardTable3;
@@ -27,6 +29,14 @@ GtkImage *cardTable5;
 
 GtkImage *cardHand1;
 GtkImage *cardHand2;
+
+// Declaración de labels
+
+GtkWidget * labelPlayerID;
+GtkWidget * labelMoney;
+GtkWidget * labelBet;
+GtkWidget * labelPot;
+GtkWidget * labelHand;
 
 // Declaración del builder
 
@@ -50,11 +60,58 @@ char imageFilename[53][30] = {"./Assets/cardBack_red5.png",
 "./Assets/cardClubsA.png","./Assets/cardSpadesA.png","./Assets/cardHeartsA.png","./Assets/cardDiamondsA.png",
 };
 
-int change_image(GtkImage * image,int id) // Función para cambiar una carta a base de un índice. 0 es la carta vuelta.
+// --------------------------------------------------------------------------------------------------------------------
+
+// Funciones básicas
+
+// --------------------------------------------------------------------------------------------------------------------
+
+// Función para cambiar la imágen de una carta a base de un identificador numérico. 0 es la carta volteada.
+
+void change_image(GtkImage * image, int id) 
 {
     gtk_image_set_from_file(image, imageFilename[id]);
-    return 0;
 }
+
+// Función para cambiar el texto de un label. Recibe el label por editar y un pointer al texto por poner
+
+void label_update(GtkWidget * label, char *string)
+{
+    gtk_label_set_text(GTK_LABEL(label), (const gchar*) string);
+}
+
+// -----------------------------------------------------------------------------
+
+// Funciones de los botones
+
+// -----------------------------------------------------------------------------
+
+void on_buttonCall_clicked (GtkButton *b) // Call
+
+{
+    static int counter = 2;
+    change_image(cardTable5,counter);
+    counter++;
+}
+
+void on_buttonRaise_clicked (GtkButton *b) // Raise
+
+{
+    gtk_widget_hide(window);
+}
+
+void on_buttonFold_clicked (GtkButton *b) // Fold
+
+{
+    char text[] = "Hello World!";
+    label_update(labelPlayerID,text);
+}
+
+// -------------------------------------------------------------------------------
+
+// Main
+
+// --------------------------------------------------------------------------------
 
 int main (int argc, char *argv[])
 {
@@ -66,11 +123,9 @@ int main (int argc, char *argv[])
 
     window = GTK_WIDGET(gtk_builder_get_object(builder,"window")); // Crear la ventana y conectarla
 
-    
-
     // Tamaño correcto de ventana
-    //gtk_window_set_default_size(GTK_WINDOW(window), 1000, 600);
-    //gtk_window_set_resizable (GTK_WINDOW(window)), FALSE );
+    gtk_window_set_default_size(GTK_WINDOW(window), 1500, 900);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE );
 
     g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit),NULL); // Conexión a la ventana con destroy
 
@@ -79,6 +134,13 @@ int main (int argc, char *argv[])
     gtk_builder_connect_signals(builder,NULL);
 
     fixed1 = GTK_WIDGET(gtk_builder_get_object(builder,"fixed1"));
+
+
+    labelPlayerID = GTK_WIDGET(gtk_builder_get_object(builder,"labelPlayerID"));
+    labelMoney = GTK_WIDGET(gtk_builder_get_object(builder,"labelMoney"));
+    labelPot = GTK_WIDGET(gtk_builder_get_object(builder,"labelPot"));
+    labelBet = GTK_WIDGET(gtk_builder_get_object(builder,"labelBet"));
+    labelHand = GTK_WIDGET(gtk_builder_get_object(builder,"labelHand"));
 
     // Posicionamiento de cartas
 
@@ -91,12 +153,13 @@ int main (int argc, char *argv[])
 
     // Hand
 
-    cardHand1 = GTK_IMAGE(gtk_builder_get_object(builder, "cardTable1"));
-    cardHand2 = GTK_IMAGE(gtk_builder_get_object(builder, "cardTable2"));
+    cardHand1 = GTK_IMAGE(gtk_builder_get_object(builder, "cardHand1"));
+    cardHand2 = GTK_IMAGE(gtk_builder_get_object(builder, "cardHand2"));
 
 
     // Cambio de imágenes
-    change_image(cardTable1,52);
+    change_image(cardHand1,30);
+    change_image(cardTable2,29);
 
 
     // Visibility
