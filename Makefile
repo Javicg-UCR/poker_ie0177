@@ -11,13 +11,13 @@ FLAGS = -Wall -rdynamic
 ## Cambiar estos nombres
 
 #              archivo.c     (nombre del archivo principal)
-CFILE = ./test/firsttest.c
+CFILE = ./test/imagetest.c
 
 #       archivo   (nombre del exe)
-EXE = ./firsttest
+EXE = ./imagetest
 
 #        archivo      (nombre del target)
-TARGET = firsttest
+TARGET = imagetest
 
 # -----------------------------------------
 
