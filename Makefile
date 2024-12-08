@@ -5,6 +5,7 @@
 
 CC = gcc
 FLAGS = -Wall -rdynamic
+INCLUDE_PATH = -I./include
 
 #-----------------------------------------
 
@@ -19,6 +20,14 @@ EXE = ./imagetest
 #        archivo      (nombre del target)
 TARGET = imagetest
 
+C_INCLUDE = ./test/include.c
+
+C_INCLUDE_EXE = ./test/include
+
+C_INCLUDE_TARGET = include
+
+H_INCLUDE = ./test/include.h
+
 # -----------------------------------------
 
 .PHONY: all clean
@@ -26,8 +35,12 @@ TARGET = imagetest
 all: $(TARGET)
 
 $(TARGET): $(CFILE)
-	$(CC) -Wall -rdynamic `pkg-config --cflags gtk+-3.0` -o $(TARGET) $(CFILE) `pkg-config --libs gtk+-3.0`
+	$(CC) $(FLAGS) $(INCLUDE_PATH) `pkg-config --cflags gtk+-3.0` -o $(TARGET) $(CFILE) $(C_INCLUDE) `pkg-config --libs gtk+-3.0`
+
 clean:
 	rm -f $(EXE)
+
+run:
+	$(EXE)
 
 ##gcc `pkg-config --cflags gtk+-3.0` -o imagetest imagetest.c `pkg-config --libs gtk+-3.0`

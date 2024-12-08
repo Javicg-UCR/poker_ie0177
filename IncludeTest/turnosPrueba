@@ -1,0 +1,31 @@
+#include <stdio.h>
+
+// Estructura de jugador
+typedef struct {
+    int number;
+    char name[30];
+    int hand[7]; // 5 cartas del jugador + 2 cartas comunitarias
+    int handValue;
+    int money;
+    int fold; // 0 para no retirado, 1 para retirado
+    int turnOrder;
+} player;
+
+
+int cycle_turnOrder(player *p, int n)
+{
+    p->turnOrder = (p->turnOrder + n) % 4;
+}
+
+int main ()
+{
+
+
+    // Inicializar jugadores
+    player players[4] = {
+        {1, "Jugador 1", {0}, 0, 1000, 0,1},
+        {2, "Jugador 2", {0}, 0, 1000, 0,2},
+        {3, "Jugador 3", {0}, 0, 1000, 0,3},
+        {4, "Jugador 4", {0}, 0, 1000, 0,4}
+    };
+}
