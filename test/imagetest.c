@@ -53,8 +53,19 @@ GtkWidget *labelBet;
 GtkWidget *labelPot;
 GtkWidget *labelHand;
 
+GtkWidget *labelPlayerIDVar;
+GtkWidget *labelMoneyVar;
+GtkWidget *labelBetVar;
+GtkWidget *labelPotVar;
+
+
 // Start window
 GtkWidget *labelTitle;
+
+// Bet window
+
+GtkWidget *labelRaise;
+GtkWidget *labelRaiseAmmount;
 
 // Declaración de controladores ----------------------------------------------
 
@@ -65,7 +76,9 @@ GtkWidget *buttonCall;
 
 // Bet Window
 GtkWidget *buttonBet;
-GtkWidget *entryBet;
+GtkWidget *buttonBet25;
+GtkWidget *buttonBet50;
+GtkWidget *buttonBet100;
 
 // Declaración del builder ----------------------------------------------------
 
@@ -97,13 +110,38 @@ player players[4] = {
 };
 
 // static int global_i = 0;
-static int current_player = 1;
+static int current_player = 0;
+static int current_bet = 0;
+static int pot = 0;
+char buffer[10]; // para int_to_string()
+//static int numPlayers = 4;
 
 // --------------------------------------------------------------------------------------------------------------------
 
 // Funciones básicas
 
 // --------------------------------------------------------------------------------------------------------------------
+
+void int_to_str(int number, char *str) {
+    int i = 0;
+
+    // Agarrar dígitos, van a string
+    while (number > 0) {
+        // Poner el int en el string
+        str[i++] = number % 10 + '0';
+      	number /= 10;
+    }
+
+    // Null para acabar str
+    str[i] = '\0';
+
+    // Cambiar el orden
+    for (int j = 0, k = i - 1; j < k; j++, k--) {
+        char temp = str[j];
+        str[j] = str[k];
+        str[k] = temp;
+    }
+}
 
 // Función para cambiar la imágen de una carta a base de un identificador numérico. 0 es la carta volteada.
 
@@ -116,7 +154,7 @@ void change_image(GtkImage * image, int id)
 
 void change_label(GtkWidget * label, char *string)
 {
-    gtk_label_set_text(GTK_LABEL(label), (const gchar*) string);
+    gtk_label_set_text((GTK_LABEL(label)), (const gchar*) string);
 }
 
 // Función para cambio de ventanas. Recibe la ventana vieja y la nueva
@@ -143,11 +181,19 @@ void change_board(int id)
     change_image(cardTable5,players[id].hand[6]);
 
     // Update de los labels
-    //change_label()
-    //change_label()
-    //change_label()
-}
+    
+    change_label(labelPlayerIDVar,players[current_player].name);
 
+    int_to_str(players[current_player].money,buffer);
+    change_label(labelMoneyVar,buffer);
+
+    int_to_str(current_bet,buffer);
+    change_label(labelBetVar,buffer);
+
+    int_to_str(pot,buffer);
+    change_label(labelPotVar,buffer);
+
+}
 
 // -----------------------------------------------------------------------------
 
@@ -158,65 +204,103 @@ void change_board(int id)
 void on_buttonCall_clicked (GtkButton *b) // Call
 
 {
-    static int counter = 2;
-    change_image(cardTable5,counter);
-    counter++;
+    if (players[current_player].money >= current_bet)
+    {
+        players[current_player].money -= current_bet;
+    }
+    else
+    {
+        players[current_player].fold = TRUE;
+    }
+    if (current_player < 4)
+    {
+        current_player ++;
+    }
+    else
+    {
+        current_player = 0;
+    }
+    change_board(current_player + 1);
 }
 
 void on_buttonRaise_clicked (GtkButton *b) // Raise
 
 {
     change_window(gameWindow,betWindow);
+
+    int_to_str(current_bet,buffer);
+    change_label(labelRaiseAmmount,buffer);
 }
 
 void on_buttonFold_clicked (GtkButton *b) // Fold
 
 {
-    static int dumb = 1;
-    change_board(dumb);
-    if (dumb < 4)
+   players[current_player].fold = true;
+   if (current_player < 4)
     {
-        dumb++;
+        current_player ++;
     }
     else
     {
-        dumb = 1;
+        current_player = 0;
     }
+    change_board(current_player + 1);
+
 }
 
 void on_buttonStart_clicked(GtkButton *b) // Start
 {
     change_window(startWindow,gameWindow);
-    change_board(current_player);
+    change_board(current_player + 1);
 }
 
 void on_buttonBet_clicked(GtkButton *b) // Bet
 {
-    change_window(betWindow,gameWindow);
-    current_player ++;
-    change_board(current_player);
-}
-
-void on_entry_numeric_insert_text(GtkEditable *editable, const gchar *text, gint length, gint *position, gpointer user_data) {
-    gchar *result = g_new(gchar, length + 1); // Temporary buffer for valid characters
-    int j = 0;
-
-    // Iterate through the input text
-    for (int i = 0; i < length; i++) {
-        if (isdigit(text[i])) { // Check if the character is a digit
-            result[j++] = text[i];
+    if (players[current_player].money >= current_bet)
+    {
+        pot += current_bet;
+        players[current_player].money -= current_bet;
+        if (current_player < 4)
+        {
+            current_player ++;
+        }
+        else
+        {
+            current_player = 0;
         }
     }
+    change_window(betWindow,gameWindow);
+    change_board(current_player + 1);
+}
 
-    // Stop signal emission to prevent the original input
-    g_signal_stop_emission_by_name(editable, "insert-text");
-
-    // Insert only the valid numeric characters
-    if (j > 0) {
-        gtk_editable_insert_text(editable, result, j, position);
+void on_buttonBet25_clicked(GtkButton *b) // Bet +25
+{
+    if (current_bet + 25 <= players[current_player].money)
+    {
+        current_bet += 25;
+        int_to_str(current_bet,buffer);
+        change_label(labelRaiseAmmount,buffer);
     }
+}
 
-    g_free(result); // Free temporary buffer
+void on_buttonBet50_clicked(GtkButton *b) // Bet +50
+{
+    if (current_bet + 50 <= players[current_player].money)
+    {
+        current_bet += 50;
+        int_to_str(current_bet,buffer);
+        change_label(labelRaiseAmmount,buffer);
+    }
+}
+
+void on_buttonBet100_clicked(GtkButton *b) // Bet +100
+{
+    if (current_bet + 100 <= players[current_player].money)
+    {
+        current_bet += 100;
+        int_to_str(current_bet,buffer);
+        change_label(labelRaiseAmmount,buffer);
+    }
 }
 
 // -------------------------------------------------------------------------------
@@ -246,6 +330,10 @@ int main (int argc, char *argv[])
     gtk_window_set_default_size(GTK_WINDOW(startWindow), 500, 250);
     gtk_window_set_resizable(GTK_WINDOW(startWindow),FALSE);
 
+    // Tamaño correcto de betWindow
+    gtk_window_set_default_size(GTK_WINDOW(betWindow), 550, 250);
+    gtk_window_set_resizable(GTK_WINDOW(startWindow),FALSE);
+
     // Conexión a las ventanas con destroy
     g_signal_connect(gameWindow,"destroy",G_CALLBACK(gtk_main_quit),NULL);
     g_signal_connect(startWindow,"destroy",G_CALLBACK(gtk_main_quit),NULL);
@@ -270,6 +358,12 @@ int main (int argc, char *argv[])
     labelHand = GTK_WIDGET(gtk_builder_get_object(builder,"labelHand"));
     labelTitle = GTK_WIDGET(gtk_builder_get_object(builder,"labelTitle"));
 
+    labelPlayerIDVar = GTK_WIDGET(gtk_builder_get_object(builder,"labelPlayerIDVar"));
+    labelMoneyVar = GTK_WIDGET(gtk_builder_get_object(builder,"labelMoneyVar"));
+    labelPotVar = GTK_WIDGET(gtk_builder_get_object(builder,"labelPotVar"));
+    labelBetVar = GTK_WIDGET(gtk_builder_get_object(builder,"labelBetVar"));
+    
+
     // Posicionamiento de cartas
 
     // Table
@@ -283,13 +377,16 @@ int main (int argc, char *argv[])
     cardHand1 = GTK_IMAGE(gtk_builder_get_object(builder, "cardHand1"));
     cardHand2 = GTK_IMAGE(gtk_builder_get_object(builder, "cardHand2"));
 
-    // Control & display (betWindow) -------------------------------------------------------------------------------
+    // Control & display (betWindow) ---------------------------------------------------
 
-    entryBet = GTK_WIDGET(gtk_builder_get_object(builder, "entryBet"));
+    labelRaise = GTK_WIDGET(gtk_builder_get_object(builder,"labelRaise"));
+    labelRaiseAmmount = GTK_WIDGET(gtk_builder_get_object(builder,"labelRaiseAmmount"));
 
     // Inicialización del programa ----------------------------------------------------
 
     gtk_widget_show_all(startWindow);
+    
+    deal_reset(1);
 
     gtk_main();
 

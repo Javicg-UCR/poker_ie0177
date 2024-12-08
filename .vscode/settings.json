@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "gtkx.h": "c"
+        "gtkx.h": "c",
+        "type_traits": "c"
     }
 }

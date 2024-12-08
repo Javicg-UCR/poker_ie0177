@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include "include.h"
 
-// Limpia el buffer
-void clearBuffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-}
 
 // Reparte una carta única
 int deal_reset(int check) {
@@ -38,7 +33,6 @@ void distributeCards(player players[], int numPlayers) {
         for (int j = 0; j < 5; j++) {
             int card = deal_reset(0);
             if (card == -1) {
-                printf("No hay más cartas disponibles.\n");
                 exit(1);
             }
             players[i].hand[j] = card;
@@ -46,13 +40,6 @@ void distributeCards(player players[], int numPlayers) {
     }
 }
 
-// Mostrar mano del jugador
-void showPlayerHand(player *p) {
-    printf("\n%s tiene las siguientes cartas:\n", p->name);
-    for (int i = 0; i < 5; i++) { // Solo muestra las primeras 5 cartas
-        printf("Carta %d: %d\n", i + 1, p->hand[i]);
-    }
-}
 
 int cycle(player players[], int numPlayers, int cycle_by)
 {
@@ -94,11 +81,9 @@ void bettingRound(player players[], int numPlayers, int *pot) {
         int choice;
         if (scanf("%d", &choice) != 1) {
             printf("Entrada inválida. Intenta de nuevo.\n");
-            clearBuffer();
             i--;
             continue;
         }
-        clearBuffer();
 
         switch (choice) {
             case 1: {
@@ -106,11 +91,9 @@ void bettingRound(player players[], int numPlayers, int *pot) {
                 printf("¿Cuánto quieres subir? ");
                 if (scanf("%d", &raise) != 1 || raise <= 0 || raise > players[playerCounter].money) {
                     printf("Cantidad inválida. Intenta de nuevo.\n");
-                    clearBuffer();
                     i--;
                     continue;
                 }
-                clearBuffer();
                 highestBet += raise;
                 players[playerCounter].money -= highestBet;
                 *pot += highestBet;
@@ -167,21 +150,14 @@ void menu(player players[], int numPlayers) {
         printf("1. Repartir cartas\n2. Mostrar manos\n3. Evaluar manos\n4. Ronda de apuestas\n5. Mostrar ganador\n6. Salir\nOpción: ");
         if (scanf("%d", &option) != 1) {
             printf("Entrada inválida. Intenta de nuevo.\n");
-            clearBuffer();
             continue;
         }
-        clearBuffer();
 
         switch (option) {
             case 1:
                 deal_reset(1); // Reiniciar el mazo
                 distributeCards(players, numPlayers);
                 printf("Cartas repartidas.\n");
-                break;
-            case 2:
-                for (int i = 0; i < numPlayers; i++) {
-                    showPlayerHand(&players[i]);
-                }
                 break;
             case 4:
                 bettingRound(players, numPlayers, &pot);
